@@ -3,7 +3,7 @@ const server = express()
 const bodyParser = require('body-parser')
 const routers = require('./modules/routers/routers')
 
-server.use(bodyParser)
+server.use(bodyParser.json())
 server.use(express.static('./static'))
 server.use(routers)
 
