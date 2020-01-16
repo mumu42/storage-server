@@ -11,32 +11,34 @@ class Jwt {
   generateToken () {
     const data = this.data
     const created = Math.floor(Date.now() / 1000)
-    const cert = fs.readFileSync(path.join(__dirname, '../pem/private_key.pem'))
+    const cert = fs.readFileSync(path.join(__dirname, '../../static/pem/private_key.pem'))
     const token = jwt.sign({
       data,
       exp: created + 60 * 30
-    }, cert,  {algorithm: 'ES256'})
+    }, cert, {algorithm: 'RS256'})
 
     return token
   }
 
   // 验证token
   verifyToken () {
-    const token = this.data
-    const cert = fs.readFileSync(path.join(__dirname, '../pem/public_key.pem'))
-    let res
-    try {
-      let result = jwt.verify(token, cert, {algorithms: ['RS256']}) || {}
-      let {exp = 0} = result
-      let current = Math.floor(Date.now() / 1000)
-      if (current <= exp) {
-        res = result.data || {}
+    return new Promise((resolve, reject) => {
+      const token = this.data
+      const cert = fs.readFileSync(path.join(__dirname, '../../static/pem/public_key.pem'))
+      let res
+      try {
+        let result = jwt.verify(token, cert, {algorithms: ['RS256']}) || {}
+        let {exp = 0} = result
+        let current = Math.floor(Date.now() / 1000)
+        if (current <= exp) {
+          res = result.data || {}
+        }
+        resolve(res)
+      } catch (err) {
+        // res = err
+        reject(err)
       }
-    } catch (err) {
-      res = err
-    }
-
-    return res
+    })
   }
 }
 
