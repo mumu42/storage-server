@@ -11,3 +11,16 @@ module.exports.verifyToken = (token, data) => {
     })
   })
 }
+
+module.exports.getHeadersToken = (req) => {
+  return new Promise((resolve, reject) => {
+    const token = req.headers.token
+    const id = req.headers.id
+    if (token) {
+      resolve({token, id})
+    } else {
+      const err = 'is error'
+      reject(err)
+    }
+  })
+}
