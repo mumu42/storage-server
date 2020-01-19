@@ -8,7 +8,7 @@ const Token = require('../base-handle/token')
 function authority (req) {
   return new Promise((resolve, reject) => {
     Commons.getHeadersToken(req).then(res => {
-      Commons.verifyToken(...res).then(() => {
+      Commons.verifyToken(res.token, res.id).then(() => {
         resolve()
       }).catch((err) => {
         reject(err)
