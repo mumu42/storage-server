@@ -60,9 +60,27 @@ module.exports.getList = (req, res) => {
   })
 }
 
+module.exports.getAdminById = (req, res) => {
+  const { id } = req.body
+  Module.select({
+    table: 'admin',
+    values: 'id,nickname,isDisable,isAdmin',
+    conditions: `id='${id}'`
+  }).then(result => {
+    return res.json({
+      code: 200,
+      result: result[0]
+    })
+  }).catch(err => {
+    return res.json({
+      code: 400,
+      msg: err
+    })
+  })
+}
+
 // 更改密码
 module.exports.updateAdmin = (req, res) => {
-
 }
 
 function selectAdmin (conditions) {

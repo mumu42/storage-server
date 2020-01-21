@@ -27,7 +27,30 @@ router.post('/admin/add', (req, res) => {
     return res.json({code: 403, result: {msg: '无效的token'}})
   })
 })
-router.post('/getAdmins', Admin.getList)
+router.post('/getAdmins', (req, res) => {
+  authority(req).then(() => {
+    Admin.getList(req, res)
+  }).catch(() => {
+    return res.json({
+      code: 403,
+      result: {
+        msg: '无效的token'
+      }
+    })
+  })
+})
+router.post('/getAdmin', (req, res) => {
+  authority(req).then(() => {
+    Admin.getAdminById(req, res)
+  }).catch(() => {
+    return res.json({
+      code: 403,
+      result: {
+        msg: '无效的token'
+      }
+    })
+  })
+})
 
 router.post('/getToken', Token.getToken)
 
