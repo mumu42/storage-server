@@ -1,4 +1,6 @@
 const sql = require('mysql')
+const xlsx = require('node-xlsx')
+const fs = require('fs')
 const con = sql.createConnection({
   host: '127.0.0.1',
   user: 'root',
@@ -55,6 +57,33 @@ module.exports.delete = (params) => {
       } else {
         resolve(result)
       }
+    })
+  })
+}
+
+// 将数据库数据导出生成excel表
+module.exports.exportList = (list, header, fileName) => {
+  return new Promise((resolve, reject) => {
+    let data = [header]
+    for (let i = 0; i < list.length; i++) {
+      let arr = []
+      let value = list[i]
+      for (let key in value) {
+        arr.push(value[key])
+      }
+      data.push(arr)
+    }
+    let buffer = xlsx.build([{
+      name: fileName.split('-')[0],
+      data
+    }])
+    const filepath = `./static/files/${fileName}.xlsx`
+    fs.writeFile(filepath, buffer, (err) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve()
     })
   })
 }

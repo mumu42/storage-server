@@ -1,4 +1,7 @@
 const Module = require('../sql/module')
+const fs = require('fs')
+const mime = require('mime')
+const path = require('path')
 
 // 添加管理员
 module.exports.addAdmin = (req, res) => {
@@ -83,6 +86,46 @@ module.exports.getAdminById = (req, res) => {
 module.exports.updateAdmin = (req, res) => {
 }
 
+// 下载附件
+module.exports.adminExport = (req, res) => {
+  Module.select({
+    table: 'admin',
+    values: 'id,nickname,isDisable'
+  }).then(result => {
+    const filename = `admin-${Date.now()}`
+    Module.exportList(result, ['ID', '昵称', '是否禁用'], filename).then(() => {
+      const filePath = `./static/files/${filename}.xlsx`
+      console.log(path.basename(filePath), 'path path')
+      fs.stat(filePath, (err, stat) => {
+        if (err) {
+          return res.json({
+            code: 400,
+            msg: err
+          })
+        }
+        let stream = fs.createReadStream(filePath)
+        res.setHeader('Content-Type', mime.getType(filePath))
+        res.setHeader('Content-Length', stat.size)
+        res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`)
+        stream.pipe(res)
+        res.json({
+          code: 200,
+          msg: '成功~'
+        })
+      })
+    }).catch(err => {
+      res.json({
+        code: 400,
+        msg: err
+      })
+    })
+  }).catch(err => {
+    res.json({
+      code: 400,
+      msg: err
+    })
+  })
+}
 function selectAdmin (conditions) {
   return new Promise((resolve, reject) => {
     Module.select({

@@ -52,6 +52,19 @@ router.post('/getAdmin', (req, res) => {
   })
 })
 
+router.get('/admin/export', (req, res) => {
+  authority(req).then(() => {
+    Admin.adminExport(req, res)
+  }).catch(() => {
+    return res.json({
+      code: 403,
+      result: {
+        msg: '无效的token'
+      }
+    })
+  })
+})
+
 router.post('/getToken', Token.getToken)
 
 module.exports = router
